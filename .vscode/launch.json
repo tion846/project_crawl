@@ -15,5 +15,16 @@
             ],
             "console": "integratedTerminal"
         },
+        {
+            "name": "Python: Launch practice.py",
+            "type": "python",
+            "request": "launch",
+            "module": "scrapy",
+            "args": [
+                "runspider",
+                "${workspaceFolder}\\project_crawl\\spiders\\practice.py"
+            ],
+            "console": "integratedTerminal"
+        },
     ]
 }

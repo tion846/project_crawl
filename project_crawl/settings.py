@@ -91,3 +91,13 @@ ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# Configure logging
+# See https://docs.scrapy.org/en/latest/topics/logging.html
+# See https://docs.scrapy.org/en/latest/topics/logging.html#logging-settings
+# LOG_LEVEL=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+
+LOG_ENABLED=True
+LOG_FILE_APPEND=True
+LOG_FILE="logging.txt"
+LOG_LEVEL="WARNING"
