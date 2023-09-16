@@ -62,9 +62,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "project_crawl.pipelines.ProjectCrawlPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "project_crawl.pipelines.JsonWriterPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -96,8 +96,11 @@ FEED_EXPORT_ENCODING = "utf-8"
 # See https://docs.scrapy.org/en/latest/topics/logging.html
 # See https://docs.scrapy.org/en/latest/topics/logging.html#logging-settings
 # LOG_LEVEL=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+LOG_ENABLED = True
+LOG_FILE_APPEND = True
+LOG_FILE=""
+LOG_LEVEL = "WARNING"
 
-LOG_ENABLED=True
-LOG_FILE_APPEND=True
-LOG_FILE="logging.txt"
-LOG_LEVEL="WARNING"
+# Configure
+LOG_FILE_FOLDER = "Log"
+JSON_PIPELINE_OUTPUT_FOLDER = "Output"
