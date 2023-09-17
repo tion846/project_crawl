@@ -32,10 +32,11 @@ class JsonWriterPipeline:
         output_file_path = os.path.join(os.getcwd(), output_folder, output_file)
 
         data = self.collection[spider.name]
-        self.file = open(output_file_path, "w")
-        self.file.write(json.dumps(data))
-        self.file.close()
-        self.collection[spider.name] = []
+        if len(data) > 0:
+            self.file = open(output_file_path, "w")
+            self.file.write(json.dumps(data))
+            self.file.close()
+            self.collection[spider.name] = []
 
     def process_item(self, item, spider):
         collects = self.collection[spider.name]

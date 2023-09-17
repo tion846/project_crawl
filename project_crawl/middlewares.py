@@ -101,3 +101,31 @@ class ProjectCrawlDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from scrapy.http import HtmlResponse
+
+
+# See https://python3webspider.cuiqingcai.com/13.8scrapy-dui-jie-selenium
+
+class SeleniumMiddleware():
+    def __init__(self):
+        opts = Options()
+        self.browser = webdriver.Chrome(options=opts)
+
+    def __del__(self):
+        self.browser.quit()
+
+    def process_request(self, request, spider):
+        self.browser.implicitly_wait(2)
+        self.browser.get(request.url)
+
+        self.browser.execute_script("")
+
+        return HtmlResponse(url=request.url, body=self.browser.page_source, request=request, encoding='utf-8', status=200)

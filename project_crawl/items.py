@@ -12,5 +12,6 @@ class ProjectCrawlItem(scrapy.Item):
     pass
 
 class DictionaryItem(scrapy.Item):
+    index = scrapy.Field()
     name = scrapy.Field()
     value = scrapy.Field()
