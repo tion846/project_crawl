@@ -29,7 +29,11 @@ class JsonWriterPipeline:
 
         output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
         output_file = f"{spider.name}_items.json"
-        output_file_path = os.path.join(os.getcwd(), output_folder, output_file)
+        output_file_path = os.path.join(
+            os.getcwd(),
+            output_folder,
+            output_file
+        )
 
         data = self.collection[spider.name]
         if len(data) > 0:

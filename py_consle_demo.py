@@ -40,3 +40,40 @@ for x in data:
     print(x.name, x.value, hasattr(x, "values"))
 
 """
+
+
+"""
+var url = "https://essearchapi-na.hawksearch.com/api/v2/search";
+var data = {
+  "query": "type:product",
+  "ClientData": {
+    "VisitId": "171032c9-4157-4ff8-9011-b8da8b36600e",
+    "VisitorId": "db0717a3-1569-40cc-8bf2-32e224656f88",
+    "UserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+    "Custom": {}
+  },
+  "Keyword": "Laptops",
+  "ClientGuid": "bdeebee3d2b74c8ea58522bb1db61f8e"
+}
+
+fetch(url, {
+  method: "POST",
+  body: JSON.stringify(data),
+  headers: new Headers({
+    "Content-Type": "application/json",
+  }),
+})
+  .then((res) => res.json())
+  .catch((error) => console.error("Error:", error))
+  .then((response) => console.log("Success:", response));
+"""
+
+"""
+let input = {
+    method: "POST",
+};
+let url = "http://localhost:5410/PurchaseReport/GetPlantCode?processType=SA"
+let data = await fetch(url)
+let result = await data.json()
+return result
+"""

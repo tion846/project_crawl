@@ -18,9 +18,3 @@ check_folder_exists(logging_folder)
 
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 check_folder_exists(output_folder)
-
-log_file_name = strftime("%Y%m%d", gmtime())
-logging_setting = {
-    "LOG_FILE": f"{logging_folder}\\{log_file_name}.txt"
-}
-configure_logging(logging_setting)

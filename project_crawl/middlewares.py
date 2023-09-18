@@ -103,6 +103,7 @@ class ProjectCrawlDownloaderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
@@ -110,22 +111,36 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from scrapy.http import HtmlResponse
+from scrapy_selenium import SeleniumRequest
 
 
 # See https://python3webspider.cuiqingcai.com/13.8scrapy-dui-jie-selenium
+# See https://github.com/clemfromspace/scrapy-selenium
 
 class SeleniumMiddleware():
     def __init__(self):
         opts = Options()
-        self.browser = webdriver.Chrome(options=opts)
+        opts.add_argument("--headless") # 不彈出chrome
+        self.driver = webdriver.Chrome(options=opts)
 
     def __del__(self):
-        self.browser.quit()
+        self.driver.quit()
 
     def process_request(self, request, spider):
-        self.browser.implicitly_wait(2)
-        self.browser.get(request.url)
+        if not isinstance(request, SeleniumRequest):
+            return None
 
-        self.browser.execute_script("")
+        # self.driver.implicitly_wait(2)
+        self.driver.get(request.url)
 
-        return HtmlResponse(url=request.url, body=self.browser.page_source, request=request, encoding='utf-8', status=200)
+        if request.script:
+            result = self.driver.execute_script(request.script)
+            body = self.driver.page_source + f"<div id=\"js-script-result\">{json.dumps(result)}</div>"
+        else:
+            body = self.driver.page_source
+
+        return HtmlResponse(url=request.url,
+                            body=body,
+                            request=request,
+                            encoding='utf-8',
+                            status=200)
