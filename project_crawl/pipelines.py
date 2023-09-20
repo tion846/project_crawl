@@ -5,10 +5,10 @@
 
 
 # useful for handling different item types with a single interface
-import json
-import os
 from itemadapter import ItemAdapter
 from scrapy.utils.project import get_project_settings
+import json
+import os
 
 
 class ProjectCrawlPipeline:
@@ -25,22 +25,23 @@ class JsonWriterPipeline:
         self.collection[spider.name] = []
 
     def close_spider(self, spider):
-        self.settings = get_project_settings()
-
-        output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
-        output_file = f"{spider.name}_items.json"
-        output_file_path = os.path.join(
-            os.getcwd(),
-            output_folder,
-            output_file
-        )
-
-        data = self.collection[spider.name]
         if len(data) > 0:
+            self.settings = get_project_settings()
+            output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
+            output_file = f"{spider.name}_items.json"
+            output_file_path = os.path.join(
+                os.getcwd(),
+                output_folder,
+                output_file
+            )
+
+            data = self.collection[spider.name]
             self.file = open(output_file_path, "w")
             self.file.write(json.dumps(data))
             self.file.close()
             self.collection[spider.name] = []
+        else:
+            print(f"[{spider.name}] data collection is empty!")
 
     def process_item(self, item, spider):
         collects = self.collection[spider.name]

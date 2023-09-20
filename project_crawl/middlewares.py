@@ -112,6 +112,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from scrapy.http import HtmlResponse
 from scrapy_selenium import SeleniumRequest
+from project_crawl.http import CommonSeleniumRequest
 
 
 # See https://python3webspider.cuiqingcai.com/13.8scrapy-dui-jie-selenium
@@ -127,11 +128,15 @@ class SeleniumMiddleware():
         self.driver.quit()
 
     def process_request(self, request, spider):
-        if not isinstance(request, SeleniumRequest):
-            return None
+        # if not isinstance(request, SeleniumRequest):
+        #     return None
 
         # self.driver.implicitly_wait(2)
         self.driver.get(request.url)
+
+        if isinstance(request, CommonSeleniumRequest):
+            if request.script_callback:
+                request.script_callback(self.driver)
 
         if request.script:
             result = self.driver.execute_script(request.script)

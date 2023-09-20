@@ -1,112 +1,119 @@
-
-"""
-import time
+from scrapy.utils.project import get_project_settings
 from time import gmtime, strftime
-
-tt = strftime("%Y%m%d", gmtime())
-print(tt)
-print(gmtime())
-"""
-
-
-"""
-import os
-
-print(os.getcwd())
-output_folder = "Output"
-output_path = os.path.join(os.getcwd(), output_folder)
-
-if not os.path.exists(output_path):
-    os.mkdir(output_path)
-"""
-
-"""
-# See https://stackoverflow.com/a/15882054
+from types import SimpleNamespace
 import json
 import os
-from types import SimpleNamespace
-
-output_folder = "Output"
-output_file = "items.json"
-output_path = os.path.join(os.getcwd(), output_folder, output_file)
-
-with open(f"{output_path}", "r") as file_json:
-    contnet = file_json.readlines()
-
-# Parse JSON into an object with attributes corresponding to dict keys.
-data = json.loads(contnet.pop(), object_hook=lambda d: SimpleNamespace(**d))
-
-for x in data:
-    print(x.name, x.value, hasattr(x, "values"))
-
-"""
 
 
-"""
-var url = "https://essearchapi-na.hawksearch.com/api/v2/search";
-var data = {
-  "query": "type:product",
-  "ClientData": {
-    "VisitId": "171032c9-4157-4ff8-9011-b8da8b36600e",
-    "VisitorId": "db0717a3-1569-40cc-8bf2-32e224656f88",
-    "UserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-    "Custom": {}
-  },
-  "Keyword": "Laptops",
-  "ClientGuid": "bdeebee3d2b74c8ea58522bb1db61f8e"
-}
-
-fetch(url, {
-  method: "POST",
-  body: JSON.stringify(data),
-  headers: new Headers({
-    "Content-Type": "application/json",
-  }),
-})
-  .then((res) => res.json())
-  .catch((error) => console.error("Error:", error))
-  .then((response) => console.log("Success:", response));
-"""
-
-"""
-let input = {
-    method: "POST",
-};
-let url = "http://localhost:5410/PurchaseReport/GetPlantCode?processType=SA"
-let data = await fetch(url)
-let result = await data.json()
-return result
-"""
-
-# ’cp950′ codec can’t decode byte 0xe6 in position 111: illegal multibyte sequence
-# See https://www.wongwonggoods.com/all-posts/python/python-debug-error/cp950-codec-python/
-
-# dict to simplenamespace
-# See https://stackoverflow.com/questions/50296097/how-to-initialize-a-simplenamespace-from-a-dict
-
-import os
-import json
-from types import SimpleNamespace
+settings = get_project_settings()
+output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 
 
-folder = "reference"
-file_name = "search.json"
-path = os.path.join(os.getcwd(), folder, file_name)
+def time_formatter():
+    f_time = strftime("%Y%m%d", gmtime())
+    print(f_time)
+    print(gmtime())
 
-with open(f"{path}", "r", encoding="utf-8") as file_json:
-    contnets = file_json.readlines()
 
-data = json.loads("".join(contnets),
-                  object_hook=lambda x: SimpleNamespace(**x))
+def check_folder_exiest():
+    print(os.getcwd())
+    output_path = os.path.join(os.getcwd(),
+                               output_folder)
 
-for doc in data.Results:
-    x = doc.Document
-    print([x.pdp_url, x.sale_price, x.product_name])
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+
+
+def simplenamespace_to_dict():
+    """
+    simplenamesapce to dict
+    See https://stackoverflow.com/questions/52783883/how-to-initialize-a-dict-from-a-simplenamespace
+    """
+    output_file = "simplenamespace_items.json"
+    output_file_path = os.path.join(
+        os.getcwd(),
+        output_folder,
+        output_file
+    )
+
+    # 產生SimpleNamespace假資料
+    data_set = []
+    for i in range(5):
+        item = SimpleNamespace(name=f"Name_{i}",
+                               value=f"Value_{i}",
+                               remark=[i, i**2, i**3])
+        data_set.append(item)
+
+    # SimpleNamespace轉換成dict
+    dict_data = []
+    for ds in data_set:
+        dict_data.append(vars(ds))
+
+    # dumps dict
+    result = json.dumps(dict_data)
+
+    file = open(output_file_path, "w")
+    file.write(result)
+    file.close()
+
+
+def dict_to_simplenamespace():
+    """
+    取得json檔案內容
+    See https://stackoverflow.com/a/15882054
+
+    dict to simplenamespace
+    See https://stackoverflow.com/questions/50296097/how-to-initialize-a-simplenamespace-from-a-dict
+    """
+    output_file = "simplenamespace_items.json"
+    output_file_path = os.path.join(
+        os.getcwd(),
+        output_folder,
+        output_file
+    )
+
+    with open(f"{output_file_path}", "r") as file_json:
+        contnets = file_json.readlines()
+
+    # 將json資料轉換成SimpleNamespace
+    data = json.loads("".join(contnets),
+                      object_hook=lambda d: SimpleNamespace(**d))
+
+    # 操作SimpleNamespace
+    for x in data:
+        print(x.name, x.value, x.remark, hasattr(x, "Remark"))
+
+
+def parse_search_api_response():
+    """
+    ’cp950′ codec can’t decode byte 0xe6 in position 111: illegal multibyte sequence
+    See https://www.wongwonggoods.com/all-posts/python/python-debug-error/cp950-codec-python/
+    """
+    folder = "reference"
+    file_name = "search.json"
+    path = os.path.join(os.getcwd(), folder, file_name)
+
+    with open(f"{path}", "r", encoding="utf-8") as file_json:
+        contnets = file_json.readlines()
+
+    data = json.loads("".join(contnets),
+                      object_hook=lambda x: SimpleNamespace(**x))
+
+    for doc in data.Results:
+        x = doc.Document
+        print([x.pdp_url, x.sale_price, x.product_name])
+
+
+# time_formatter()
+# check_folder_exiest()
+# simplenamespace_to_dict()
+# dict_to_simplenamespace()
+# parse_search_api_response()
+
 
 # VisitId: cookie hawk_visit_id
 # VisitorId: cookie hawk_visitor_id
-# ClientGuid: ??
-
+# ClientGuid: process.env.HAWKSEARCH_CLIENT_GUID
 js_script = """
     let url = "https://essearchapi-na.hawksearch.com/api/v2/search";
     let input = {
@@ -120,14 +127,13 @@ js_script = """
         "Keyword": "Laptops",
         "ClientGuid": "bdeebee3d2b74c8ea58522bb1db61f8e"
     };
-    let headers = new Headers({
-        "Accept": "application/json, text/plain, */*",
-        "Content-Type": "application/json"
-    });
     let data = await fetch(url, {
         method: "POST",
         body: JSON.stringify(input),
-        headers :headers
+        headers: new Headers({
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+        })
     });
     let result = await data.json();
     return result;
