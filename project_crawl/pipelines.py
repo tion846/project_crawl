@@ -29,17 +29,17 @@ class JsonWriterPipeline:
         data = self.collection[spider.name]
 
         if len(data) > 0:
-            format_time = strftime("%Y%m%d-%H%M%S", localtime())
+            format_time = strftime("%H%M%S", localtime())
             self.settings = get_project_settings()
             output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
-            output_file = f"{spider.name}{format_time}.json"
+            output_file = f"{spider.name}_item-{format_time}.json"
             output_file_path = os.path.join(
                 os.getcwd(),
                 output_folder,
                 output_file
             )
 
-            self.file = open(output_file_path, "w")
+            self.file = open(output_file_path, "w", encoding="utf-8")
             self.file.write(json.dumps(data))
             self.file.close()
             self.collection[spider.name] = []
