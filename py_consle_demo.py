@@ -1,8 +1,12 @@
 from scrapy.utils.project import get_project_settings
-from time import gmtime, strftime
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from time import gmtime, strftime, localtime
 from types import SimpleNamespace
 import json
 import os
+import time
 
 
 settings = get_project_settings()
@@ -10,7 +14,9 @@ output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 
 
 def time_formatter():
-    f_time = strftime("%Y%m%d", gmtime())
+    f_time = strftime("%Y/%m/%d %H:%M:%S", gmtime())
+    print(f_time)
+    f_time = strftime("%Y/%m/%d %H:%M:%S", localtime())
     print(f_time)
     print(gmtime())
 

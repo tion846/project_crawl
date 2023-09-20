@@ -103,16 +103,16 @@ class ProjectCrawlDownloaderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
-import json
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from project_crawl.http import CommonSeleniumRequest
 from scrapy.http import HtmlResponse
 from scrapy_selenium import SeleniumRequest
-from project_crawl.http import CommonSeleniumRequest
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+import json
 
 
 # See https://python3webspider.cuiqingcai.com/13.8scrapy-dui-jie-selenium
@@ -121,7 +121,7 @@ from project_crawl.http import CommonSeleniumRequest
 class SeleniumMiddleware():
     def __init__(self):
         opts = Options()
-        opts.add_argument("--headless") # 不彈出chrome
+        # opts.add_argument("--headless") # 不彈出chrome
         self.driver = webdriver.Chrome(options=opts)
 
     def __del__(self):
@@ -131,18 +131,21 @@ class SeleniumMiddleware():
         # if not isinstance(request, SeleniumRequest):
         #     return None
 
-        # self.driver.implicitly_wait(2)
         self.driver.get(request.url)
+        # self.driver.implicitly_wait(2)
 
-        if isinstance(request, CommonSeleniumRequest):
-            if request.script_callback:
-                request.script_callback(self.driver)
+        if request.wait_until:
+            WebDriverWait(self.driver, request.wait_time).until(
+                request.wait_until
+            )
+
+        if hasattr(request, "script_callback"):
+            request.script_callback(self.driver)
 
         if request.script:
-            result = self.driver.execute_script(request.script)
-            body = self.driver.page_source + f"<div id=\"js-script-result\">{json.dumps(result)}</div>"
-        else:
-            body = self.driver.page_source
+            self.driver.execute_script(request.script)
+
+        body = str.encode(self.driver.page_source)
 
         return HtmlResponse(url=request.url,
                             body=body,

@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy.utils.project import get_project_settings
+from time import localtime, strftime
 import json
 import os
 
@@ -25,17 +26,19 @@ class JsonWriterPipeline:
         self.collection[spider.name] = []
 
     def close_spider(self, spider):
+        data = self.collection[spider.name]
+
         if len(data) > 0:
+            format_time = strftime("%Y%m%d-%H%M%S", localtime())
             self.settings = get_project_settings()
             output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
-            output_file = f"{spider.name}_items.json"
+            output_file = f"{spider.name}{format_time}.json"
             output_file_path = os.path.join(
                 os.getcwd(),
                 output_folder,
                 output_file
             )
 
-            data = self.collection[spider.name]
             self.file = open(output_file_path, "w")
             self.file.write(json.dumps(data))
             self.file.close()
