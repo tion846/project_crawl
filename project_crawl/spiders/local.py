@@ -6,7 +6,7 @@ from scrapy.utils.project import get_project_settings
 from scrapy_selenium import SeleniumRequest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from time import gmtime, localtime, strftime, sleep
 from types import SimpleNamespace
 import scrapy
@@ -14,6 +14,9 @@ import scrapy
 """
 expected_conditions
 See https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html
+
+selenium document
+See https://selenium-python.readthedocs.io/index.html
 """
 
 
@@ -48,37 +51,39 @@ class LocalSpider(scrapy.Spider):
 
     def driver_execuate_callback(self, driver):
         self.print_message("[driver_execuate_callback] begin.")
+        driver.implicitly_wait(0)
+        sleep(3)
 
         # TODO:
-        for i in range(2):
-            fn_wait_until = EC.element_to_be_clickable((By.CLASS_NAME, "hawksearch-load-more"))
-            WebDriverWait(driver, 10).until(fn_wait_until)
-            driver.find_element(By.CSS_SELECTOR,
-                                "button.hawksearch-load-more").click()
+        i = 1;
+        loop_flag = False
+        while not loop_flag:
+            self.print_message(f"[loop {i}] begin.")
+            btn_load_more = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "hawksearch-load-more"))
+            )
+            btn_load_more.click()
+            self.print_message(f"[loop {i}] clicked.")
 
-            self.print_message(f"clicked: {i}")
-            driver.implicitly_wait(2)
-            sleep(3)
+            try:
+                loop_flag = WebDriverWait(driver, 2).until(
+                    EC.invisibility_of_element_located((By.CLASS_NAME, "hawksearch-load-more"))
+                )
+            except Exception:
+                pass
 
-            # fn_wait_until_visibility = EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.vwaList div.productTile"))
-            # WebDriverWait(driver, 10).until(fn_wait_until_visibility)
+            i += 1
+            self.print_message(f"[loop {i}] end.")
+
+            if i >= 20:
+                self.print_message(f"[loop {i}] break.")
+                break
+
+        # fn_wait_until_visibility = EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.vwaList div.productTile"))
+        # WebDriverWait(driver, 10).until(fn_wait_until_visibility)
 
         self.print_message("[driver_execuate_callback] end.")
-
-        # # 向下滾動
-        # scroll_dowm_cmd = "window.scrollTo(0, document.body.scrollHeight);"
-        # driver.execute_script(scroll_dowm_cmd)
-        # # sleep(2)
-        # driver.implicitly_wait(2)
-        # driver.execute_script(scroll_dowm_cmd)
-        # # 按按鈕
-        # driver.find_element(By.CSS_SELECTOR,
-        #                     "button.hawksearch-load-more").click()
-        # # sleep(2)
-        # driver.implicitly_wait(2)
-        # driver.execute_script(scroll_dowm_cmd)
-        # # sleep(2)
-        # driver.implicitly_wait(2)
+        sleep(3)
 
     def parse(self, response):
         dom_list = response.css(".vwaList").get()
