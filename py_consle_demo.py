@@ -1,28 +1,45 @@
+from project_crawl.share.utils import print_line
 from scrapy.utils.project import get_project_settings
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from time import gmtime, strftime, localtime
 from types import SimpleNamespace
+from urllib.parse import urlparse, parse_qs, urljoin, quote
 import json
 import os
-import time
 
 
 settings = get_project_settings()
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 
 
+# region method
+def encode_url():
+    # See https://www.urlencoder.io/python/
+    # See https://stackoverflow.com/questions/10113090/best-way-to-parse-a-url-query-string
+
+    url_list = [
+        "/us-en/shop/pdp/hp-envy-x360-2-in-1-laptop-15z-fh000-156-77w47av-1",
+        "/us-en/shop/pdp/victus-gaming-laptop-16-s0097nr",
+        "/us-en/shop/pdp/omen-gaming-laptop-16-xf0087nr",
+    ]
+    host = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/"
+    suffix = "async"
+    for url in url_list:
+        prod = url.replace("/us-en/shop/", "")
+        encode_prod = quote(prod, safe="")
+        result = urljoin(host, f"{encode_prod}/{suffix}")
+        print_line(result)
+
+
 def time_formatter():
     f_time = strftime("%Y/%m/%d %H:%M:%S", gmtime())
-    print(f_time)
+    print_line(f_time)
     f_time = strftime("%Y/%m/%d %H:%M:%S", localtime())
-    print(f_time)
-    print(gmtime())
+    print_line(f_time)
+    print_line(gmtime())
 
 
 def check_folder_exiest():
-    print(os.getcwd())
+    print_line(os.getcwd())
     output_path = os.path.join(os.getcwd(),
                                output_folder)
 
@@ -87,7 +104,7 @@ def dict_to_simplenamespace():
 
     # 操作SimpleNamespace
     for x in data:
-        print(x.name, x.value, x.remark, hasattr(x, "Remark"))
+        print_line(x.name, x.value, x.remark, hasattr(x, "Remark"))
 
 
 def parse_search_api_response():
@@ -107,7 +124,8 @@ def parse_search_api_response():
 
     for doc in data.Results:
         x = doc.Document
-        print([x.pdp_url, x.sale_price, x.product_name])
+        print_line([x.pdp_url, x.sale_price, x.product_name])
+# endregion
 
 
 # time_formatter()
@@ -115,32 +133,4 @@ def parse_search_api_response():
 # simplenamespace_to_dict()
 # dict_to_simplenamespace()
 # parse_search_api_response()
-
-
-# VisitId: cookie hawk_visit_id
-# VisitorId: cookie hawk_visitor_id
-# ClientGuid: process.env.HAWKSEARCH_CLIENT_GUID
-js_script = """
-    let url = "https://essearchapi-na.hawksearch.com/api/v2/search";
-    let input = {
-        "query": "type:product",
-        "ClientData": {
-            "VisitId": "f4359327-1caf-4744-b575-30d553286896",
-            "VisitorId": "673cf168-236f-4757-8a0d-ab7aedfcc21b",
-            //"UserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31",
-        },
-        "PageNo": 2,
-        "Keyword": "Laptops",
-        "ClientGuid": "bdeebee3d2b74c8ea58522bb1db61f8e"
-    };
-    let data = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(input),
-        headers: new Headers({
-            "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/json"
-        })
-    });
-    let result = await data.json();
-    return result;
-"""
+# encode_url()

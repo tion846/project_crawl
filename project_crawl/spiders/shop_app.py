@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
+from urllib.parse import urljoin, quote
 import scrapy
 
 
@@ -16,6 +17,8 @@ class ShopAppSpider(scrapy.Spider):
 
     # TODO:
     keywords = ["Laptops", "Desktops", "Docking"]
+    url_product_page = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/"
+    product_page_suffix = "async"
 
     def __init__(self, name=None, **kwargs):
         init_logging()
@@ -63,6 +66,17 @@ class ShopAppSpider(scrapy.Spider):
         sleep(3)
         print_line("[driver_before_response] end.")
 
+    def get_product_page_url(self, url):
+        product_page = url.replace("/us-en/shop/", "")
+        encode_product_page = quote(product_page, safe="")
+        result = urljoin(self.url_product_page, f"{encode_product_page}/{self.product_page_suffix}")
+
+        return result
+
+    # TODO:
+    def get_product_page(self, url):
+        pass
+
     def parse(self, response):
         dom_list = response.css(".vwaList").get()
         soup = BeautifulSoup(dom_list, features="lxml")
@@ -73,6 +87,7 @@ class ShopAppSpider(scrapy.Spider):
         for card in cards:
             product_name = card.find("h3").get_text()
             url = card.find("a")["href"]
+            product_page_url = self.get_product_page_url(url)
 
             price_inline = card.select_one(
                 "div[class^=PriceBlock-module_salePriceWrapperInline]"
@@ -93,5 +108,8 @@ class ShopAppSpider(scrapy.Spider):
                 "product_name": product_name,
                 "url": url,
                 "price": price,
+                "product_page_url": product_page_url,
+                # TODO:
+                # "technical_specifications": ""
             }
             yield item
