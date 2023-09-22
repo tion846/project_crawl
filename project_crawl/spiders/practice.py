@@ -1,11 +1,10 @@
 import scrapy
 from bs4 import BeautifulSoup
-from project_crawl.items import DictionaryItem
 
 
 class PracticeSpider(scrapy.Spider):
     name = "practice"
-    # allowed_domains = ["localhost"]
+    # allowed_domains = ["getbootstrap.com"]
     start_urls = [
         "https://getbootstrap.com/docs/5.3/getting-started/introduction/"
     ]
@@ -21,9 +20,14 @@ class PracticeSpider(scrapy.Spider):
         for section in soup.select("li.bd-links-group"):
             name = section.find("strong").get_text().strip()
             values = []
+
             for value in section.select("a.bd-links-link"):
                 values.append(value.get_text())
-            item = DictionaryItem()
-            item["name"] = name
-            item["value"] = values
+
+            item = {
+                "chapter": name,
+                "count": len(values),
+                "subTitle": values,
+            }
+
             yield item

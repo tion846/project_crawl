@@ -137,18 +137,18 @@ class SeleniumMiddleware():
                 }
             )
 
-        if request.wait_until:
+        if hasattr(request, "wait_until") and request.wait_until:
             WebDriverWait(self.driver, request.wait_time).until(
                 request.wait_until
             )
 
-        if request.screenshot:
+        if hasattr(request, "screenshot") and request.screenshot:
             request.meta['screenshot'] = self.driver.get_screenshot_as_png()
 
-        if hasattr(request, "before_response_callback"):
+        if hasattr(request, "before_response_callback") and request.before_response_callback:
             request.before_response_callback(self.driver)
 
-        if request.script:
+        if hasattr(request, "script") and request.script:
             self.driver.execute_script(request.script)
 
         body = str.encode(self.driver.page_source)
