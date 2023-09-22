@@ -6,7 +6,7 @@
 :: 1.Install package
 pip3 install scrapy
 pip3 install selenium
-pip3 install scrapy-selenium
+REM pip3 install scrapy-selenium
 
 :: 2.Create scrapy project
 scrapy startproject {project}
@@ -14,23 +14,44 @@ scrapy startproject {project}
 CD {project}
 
 :: 3.Gengerate py
-scrapy genspider {file} localhost
+scrapy genspider {spider} localhost
 
+:: 4.run a spider
+scrapy crawl {spider}
+
+
+
+:: List available spiders
+scrapy list
+
+:: Run a self-contained spider (without creating a project)
+scrapy runspider {spider}
+
+:: Print Scrapy version
+scrapy version
 ```
-
-## using package
-- scrapy (BSD-3) [https://docs.scrapy.org/en/latest/](https://docs.scrapy.org/en/latest/)
-- selenium (Apache-2.0) [https://www.selenium.dev/documentation/](https://www.selenium.dev/documentation/)
-- scrapy-selenium [https://github.com/clemfromspace/scrapy-selenium](https://github.com/clemfromspace/scrapy-selenium)
-
 
 ## vscode debugging setting
 - [https://docs.scrapy.org/en/latest/topics/debug.html](https://docs.scrapy.org/en/latest/topics/debug.html)
 - [https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code](https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code)
 
 
+## documents
+- scrapy
+  - BSD-3
+  - [https://docs.scrapy.org/en/latest/](https://docs.scrapy.org/en/latest/)
+- selenium
+  - Apache-2.0
+  - [https://www.selenium.dev/documentation/](https://www.selenium.dev/documentation/)
+- selenium-python document
+  - [https://selenium-python.readthedocs.io/index.html](https://selenium-python.readthedocs.io/index.html)
+- expected_conditions
+  - [https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html](https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html)
+- scrapy-selenium
+  - [https://github.com/clemfromspace/scrapy-selenium](https://github.com/clemfromspace/scrapy-selenium)
 
-## storeApp webApi
+
+## shop app webApi
 ### 所有產品清單
 - https://essearchapi-na.hawksearch.com/api/v2/search
   - request

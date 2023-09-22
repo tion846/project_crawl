@@ -95,12 +95,14 @@ FEED_EXPORT_ENCODING = "utf-8"
 # Configure logging
 # See https://docs.scrapy.org/en/latest/topics/logging.html
 # See https://docs.scrapy.org/en/latest/topics/logging.html#logging-settings
-# LOG_LEVEL=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
+# LOG_LEVEL allow value: ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
 LOG_ENABLED = True
 LOG_FILE_APPEND = True
 LOG_FILE=""
 LOG_LEVEL = "WARNING"
 
 # Configure
+# ENVIRONMENT allow value: ["DEVELOPMENT", "PRODUCTION"]
+ENVIRONMENT = "DEVELOPMENT"
 LOG_FILE_FOLDER = "Log"
 JSON_PIPELINE_OUTPUT_FOLDER = "Output"

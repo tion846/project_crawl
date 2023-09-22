@@ -1,8 +1,6 @@
 
-__pycache__/*
-project_crawl/__pycache__/*
-project_crawl/spiders/__pycache__/*
+__pycache__
 
-Log/*
-Output/*
-reference/*
+Log
+Output
+reference

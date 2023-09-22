@@ -124,31 +124,45 @@ class SeleniumMiddleware():
         # opts.add_argument("--headless") # 不彈出chrome
         self.driver = webdriver.Chrome(options=opts)
 
-    def __del__(self):
-        self.driver.quit()
-
     def process_request(self, request, spider):
-        # if not isinstance(request, SeleniumRequest):
-        #     return None
+        """Process a request using the selenium driver if applicable"""
 
         self.driver.get(request.url)
-        # self.driver.implicitly_wait(2)
+
+        for cookie_name, cookie_value in request.cookies.items():
+            self.driver.add_cookie(
+                {
+                    'name': cookie_name,
+                    'value': cookie_value
+                }
+            )
 
         if request.wait_until:
             WebDriverWait(self.driver, request.wait_time).until(
                 request.wait_until
             )
 
-        if hasattr(request, "script_callback"):
-            request.script_callback(self.driver)
+        if request.screenshot:
+            request.meta['screenshot'] = self.driver.get_screenshot_as_png()
+
+        if hasattr(request, "before_response_callback"):
+            request.before_response_callback(self.driver)
 
         if request.script:
             self.driver.execute_script(request.script)
 
         body = str.encode(self.driver.page_source)
 
+        # Expose the driver via the "meta" attribute
+        request.meta.update({'driver': self.driver})
+
         return HtmlResponse(url=request.url,
                             body=body,
                             request=request,
                             encoding='utf-8',
                             status=200)
+
+    def spider_closed(self):
+        """Shutdown the driver when spider is closed"""
+
+        self.driver.quit()

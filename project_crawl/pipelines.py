@@ -6,8 +6,10 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from project_crawl.share.utils import print_line
 from scrapy.utils.project import get_project_settings
 from time import localtime, strftime
+import logging
 import json
 import os
 
@@ -44,9 +46,16 @@ class JsonWriterPipeline:
             self.file.close()
             self.collection[spider.name] = []
         else:
-            print(f"[{spider.name}] data collection is empty!")
+            message = f"[{spider.name}] data collection is empty!"
+            logging.error(message)
+            print_line(message)
 
     def process_item(self, item, spider):
         collects = self.collection[spider.name]
-        collects.append(ItemAdapter(item).asdict())
+
+        if isinstance(item, dict):
+            collects.append(item)
+        else:
+            collects.append(ItemAdapter(item).asdict())
+
         return item
