@@ -32,29 +32,33 @@ scrapy version
 ```
 
 ## vscode debugging setting
-- [https://docs.scrapy.org/en/latest/topics/debug.html](https://docs.scrapy.org/en/latest/topics/debug.html)
-- [https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code](https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code)
+- https://docs.scrapy.org/en/latest/topics/debug.html
+- https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code
 
 
 ## documents
 - scrapy
   - BSD-3
-  - [https://docs.scrapy.org/en/latest/](https://docs.scrapy.org/en/latest/)
+  - https://docs.scrapy.org/en/latest/
 - selenium
   - Apache-2.0
-  - [https://www.selenium.dev/documentation/](https://www.selenium.dev/documentation/)
+  - https://www.selenium.dev/documentation/
 - selenium-python document
-  - [https://selenium-python.readthedocs.io/index.html](https://selenium-python.readthedocs.io/index.html)
+  - https://selenium-python.readthedocs.io/index.html
 - expected_conditions
-  - [https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html](https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html)
+  - https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html
 - scrapy-selenium
-  - [https://github.com/clemfromspace/scrapy-selenium](https://github.com/clemfromspace/scrapy-selenium)
+  - https://github.com/clemfromspace/scrapy-selenium
 
 
 ## shop app webApi
 ### 所有產品清單
-- https://essearchapi-na.hawksearch.com/api/v2/search
-  - request
+
+- request
+
+```txt
+https://essearchapi-na.hawksearch.com/api/v2/search
+```
 
 ```python
 # VisitId: cookie hawk_visit_id
@@ -130,9 +134,18 @@ print(result)
 ```
 
 ### 產品詳細資料
-- https://www.hp.com/us-en/shop/app/api/web/graphql/page/{product_pdp_url_su}/async
-  - 產品: https://www.hp.com/us-en/shop/pdp/omen-gaming-laptop-16t-wf000-161-76w27av-1
-  - 產品詳細: https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-16t-wf000-161-76w27av-1/async
+- request
+
+```txt
+https://www.hp.com/us-en/shop/app/api/web/graphql/page/{product_pdp_url_suffix}/async
+
+產品:
+https://www.hp.com/us-en/shop/pdp/omen-gaming-laptop-16t-wf000-161-76w27av-1
+
+產品詳細:
+https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-16t-wf000-161-76w27av-1/async
+```
+
 - response
 
 ```json
