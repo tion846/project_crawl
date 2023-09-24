@@ -24,14 +24,17 @@ print_line(get_settings("JSON_PIPELINE_OUTPUT_FOLDER"))
 
 
 
-# headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
-# r = requests.get(url=url, headers=headers)
+res = requests.get(url=url, headers=headers)
+result = res.json()
+
+print_line(type(result))
+print_line(result["data"]["page"]["pageComponents"]["pdpTechSpecs"]["technical_specifications"])
 
 # print (r.status_code)
 # print (r.headers['content-type'])
 
-# print_line(r.json())
 
 # opts = Options()
 # driver = webdriver.Chrome(options=opts)

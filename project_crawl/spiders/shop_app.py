@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup
-from project_crawl.share.utils import CrawlRequest, init_logging, print_line, is_env_production
+from project_crawl.share.utils import CrawlRequest, init_logging, print_line, is_env_production, get_settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
 from urllib.parse import urljoin, quote
+import requests
 import scrapy
 
 
@@ -15,7 +16,7 @@ class ShopAppSpider(scrapy.Spider):
         "https://www.hp.com/us-en/shop/sitesearch?keyword=Laptops"
     ]
 
-    # TODO:
+    headers = { "User-Agent": get_settings("USER_AGENT") }
     keywords = ["Laptops", "Desktops", "Docking"]
     url_product_page = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/"
     product_page_suffix = "async"
@@ -73,9 +74,13 @@ class ShopAppSpider(scrapy.Spider):
 
         return result
 
-    # TODO:
     def get_product_page(self, url):
-        pass
+        # headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+        res = requests.get(url=url, headers=self.headers, timeout=5)
+        result = res.json()
+        data = result["data"]["page"]["pageComponents"]["pdpTechSpecs"]["technical_specifications"]
+
+        return data
 
     def parse(self, response):
         dom_list = response.css(".vwaList").get()
@@ -88,6 +93,7 @@ class ShopAppSpider(scrapy.Spider):
             product_name = card.find("h3").get_text()
             url = card.find("a")["href"]
             product_page_url = self.get_product_page_url(url)
+            specifications = self.get_product_page(product_page_url)
 
             price_inline = card.select_one(
                 "div[class^=PriceBlock-module_salePriceWrapperInline]"
@@ -109,7 +115,6 @@ class ShopAppSpider(scrapy.Spider):
                 "url": url,
                 "price": price,
                 "product_page_url": product_page_url,
-                # TODO:
-                # "technical_specifications": ""
+                "technical_specifications": specifications
             }
             yield item

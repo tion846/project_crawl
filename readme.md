@@ -153,6 +153,7 @@ https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-
     "data": {
         "page": {
             "pageComponents": {
+                "pdpTechSpecs":{
                     "technical_specifications": [
                         {
                             "name": "Operating system",
@@ -222,6 +223,7 @@ https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-
                             ]
                         },
                     ]
+                }
             }
         }
     }
