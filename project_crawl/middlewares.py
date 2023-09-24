@@ -103,9 +103,7 @@ class ProjectCrawlDownloaderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
-from project_crawl.http import CommonSeleniumRequest
 from scrapy.http import HtmlResponse
-from scrapy_selenium import SeleniumRequest
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options

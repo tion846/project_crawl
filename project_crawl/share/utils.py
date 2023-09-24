@@ -50,6 +50,11 @@ class CrawlRequest(Request):
 
 
 # region export method
+def get_settings(name):
+    """ get value from settings.py """
+    return CrawlUtils.get_setting(name=name)
+
+
 def init_folder_path(folder):
     """ make sure the folder path exist. """
     folder_path = os.path.join(os.getcwd(), folder)
@@ -85,6 +90,10 @@ class CrawlUtils():
     const_date_time_pattern = "%Y-%m-%d %H:%M:%S"
     const_name_env = SimpleNamespace(Development="DEVELOPMENT",
                                      Production="PRODUCTION")
+
+    @classmethod
+    def get_setting(self, name):
+        return self.settings.get(name=name)
 
     @classmethod
     def init_logging(self):

@@ -1,15 +1,45 @@
-from project_crawl.share.utils import print_line
+from project_crawl.share.utils import print_line, get_settings
 from scrapy.utils.project import get_project_settings
 from time import gmtime, strftime, localtime
 from types import SimpleNamespace
 from urllib.parse import urlparse, parse_qs, urljoin, quote
 import json
 import os
+import requests
+import scrapy
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
 
 
 settings = get_project_settings()
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 
+url = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-16t-wf000-161-76w27av-1/async"
+# url = "https://google.com/"
+print_line(url)
+
+print_line(get_settings("www"))
+print_line(get_settings("JSON_PIPELINE_OUTPUT_FOLDER"))
+
+
+
+# headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+
+# r = requests.get(url=url, headers=headers)
+
+# print (r.status_code)
+# print (r.headers['content-type'])
+
+# print_line(r.json())
+
+# opts = Options()
+# driver = webdriver.Chrome(options=opts)
+
+# driver.get(url)
+# body = str.encode(driver.page_source)
+
+# print_line(body)
 
 # region method
 def encode_url():
