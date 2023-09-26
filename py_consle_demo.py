@@ -1,6 +1,8 @@
-from project_crawl.share.utils import print_line, get_settings
+from project_crawl.share.utils import print_line, get_settings, init_logging
+from project_crawl.share.models import Product
 from scrapy.utils.project import get_project_settings
 from time import gmtime, strftime, localtime
+import datetime
 from types import SimpleNamespace
 from urllib.parse import urlparse, parse_qs, urljoin, quote
 import json
@@ -9,42 +11,51 @@ import requests
 import scrapy
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
+import sqlite3
+import sqlalchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 
 settings = get_project_settings()
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
-
-url = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-16t-wf000-161-76w27av-1/async"
-# url = "https://google.com/"
-print_line(url)
-
-print_line(get_settings("www"))
-print_line(get_settings("JSON_PIPELINE_OUTPUT_FOLDER"))
+init_logging()
 
 
+def add_product_samples():
+    """ SqlAlchemy ORM """
+    db_connect_string = os.path.join(os.getcwd(), "SQLite", "CrawlDB.db")
+    print_line(db_connect_string)
+    engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
 
-headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
-
-res = requests.get(url=url, headers=headers)
-result = res.json()
-
-print_line(type(result))
-print_line(result["data"]["page"]["pageComponents"]["pdpTechSpecs"]["technical_specifications"])
-
-# print (r.status_code)
-# print (r.headers['content-type'])
-
-
-# opts = Options()
-# driver = webdriver.Chrome(options=opts)
-
-# driver.get(url)
-# body = str.encode(driver.page_source)
-
-# print_line(body)
+    with Session(engine) as session:
+        session.add_all([
+            Product(name="T1", link="/store/pdb/T1",
+                    spec_link="/store/app/web/api/pdb%2FT1/async", sale_price="$699.99"),
+            Product(name="T2", link="/store/pdb/T2",
+                    spec_link="/store/app/web/api/pdb%2FT2/async", sale_price="$899.00")
+        ])
+        session.commit()
 
 # region method
+
+
+def httpRequset():
+    print_line(get_settings("NONE_EXIST"))
+    print_line(get_settings("JSON_PIPELINE_OUTPUT_FOLDER"))
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+    }
+    url = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-16t-wf000-161-76w27av-1/async"
+    res = requests.get(url=url, headers=headers)
+    result = res.json()
+
+    print_line(type(result))
+    print_line(result["data"]["page"]["pageComponents"]
+               ["pdpTechSpecs"]["technical_specifications"])
+
+
 def encode_url():
     # See https://www.urlencoder.io/python/
     # See https://stackoverflow.com/questions/10113090/best-way-to-parse-a-url-query-string
@@ -64,11 +75,18 @@ def encode_url():
 
 
 def time_formatter():
+    t = datetime.datetime.now()
+    s = t.strftime('%Y-%m-%d %H:%M:%S.%f')
+    print_line(t)
+    print_line(s[:-3])
+
+    print_line("today", datetime.date.today())
+    print_line("now", datetime.datetime.now())
+
     f_time = strftime("%Y/%m/%d %H:%M:%S", gmtime())
-    print_line(f_time)
+    print_line("gmtime", f_time)
     f_time = strftime("%Y/%m/%d %H:%M:%S", localtime())
-    print_line(f_time)
-    print_line(gmtime())
+    print_line("localtime", f_time)
 
 
 def check_folder_exiest():

@@ -1,8 +1,9 @@
 from scrapy import Request
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
-from time import localtime, strftime
+from datetime import datetime
 from types import SimpleNamespace
+import logging
 import os
 
 
@@ -87,7 +88,8 @@ def print_line(*args):
 
 class CrawlUtils():
     settings = get_project_settings()
-    const_date_time_pattern = "%Y-%m-%d %H:%M:%S"
+    const_date_pattern = "%Y%m%d"
+    const_datetime_pattern = "%Y-%m-%d %H:%M:%S"
     const_name_env = SimpleNamespace(Development="DEVELOPMENT",
                                      Production="PRODUCTION")
 
@@ -98,7 +100,7 @@ class CrawlUtils():
     @classmethod
     def init_logging(self):
         logging_folder = self.settings.get("LOG_FILE_FOLDER")
-        log_file_name = strftime("%Y%m%d", localtime())
+        log_file_name = datetime.now().strftime(self.const_date_pattern)
         configure_logging(
             {"LOG_FILE": f"{logging_folder}\\{log_file_name}.txt"}
         )
@@ -110,7 +112,9 @@ class CrawlUtils():
 
     @classmethod
     def print_line(self, *args):
-        time_format = strftime(self.const_date_time_pattern, localtime())
+        time_format = datetime.now().strftime(self.const_datetime_pattern)
         print(f"[{time_format}]", *args)
+        message = "".join(map(str, args))
+        logging.debug(message)
 
 # endregion

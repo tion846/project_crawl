@@ -75,7 +75,6 @@ class ShopAppSpider(scrapy.Spider):
         return result
 
     def get_product_page(self, url):
-        # headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
         res = requests.get(url=url, headers=self.headers, timeout=5)
         result = res.json()
         data = result["data"]["page"]["pageComponents"]["pdpTechSpecs"]["technical_specifications"]

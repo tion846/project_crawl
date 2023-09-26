@@ -7,6 +7,7 @@
 pip3 install scrapy
 pip3 install selenium
 REM pip3 install scrapy-selenium
+pip3 install SQLAlchemy
 
 :: 2.Create scrapy project
 scrapy startproject {project}
@@ -229,3 +230,26 @@ https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-
     }
 }
 ```
+
+- Audio and Speakers
+- Brand
+- Camera
+- Depth
+- Display
+- FPR
+- Graphics Card
+- Hard Drive
+- Height
+- Memory
+- Model Name
+- NFC
+- Official Price
+- Operating System
+- Ports & Slots
+- Power Supply
+- Primary Battery
+- Processor
+- Web Link
+- Weight
+- Width
+- Wireless
