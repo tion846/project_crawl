@@ -1,9 +1,11 @@
 # https://docs.sqlalchemy.org/en/20/
 # https://www.cnblogs.com/lsdb/p/9835894.html
 
+# https://www.jianshu.com/p/c8952453b99a
+
 from typing import Any, List
 from typing import Optional
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from sqlalchemy.orm import mapped_column, relationship
 from time import localtime, strftime
@@ -17,13 +19,14 @@ class Base(DeclarativeBase):
 # 定义映射类User，其继承上一步创建的Base
 class Product(Base):
     __tablename__ = "Product"
-    Id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    __table_args__ = {'sqlite_autoincrement': True}
+    Id = Column(Integer, primary_key=True, autoincrement=True)
     Name = Column(String(64), nullable=False)
     Link = Column(String(256), nullable=False)
     Spec_Link = Column(String(256), nullable=False)
     Sale_Price = Column(String(8), nullable=False)
-    # Spec_Json = Column(String(max))
-    Cdt = Column(String(24), nullable=False)
+    Spec_Json = Column(String)
+    Cdt = Column(DateTime, nullable=False)
 
     def __init__(self, name, link, spec_link, sale_price, **kw: Any):
         self.Name = name

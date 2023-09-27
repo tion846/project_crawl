@@ -48,9 +48,16 @@ scrapy version
   - https://selenium-python.readthedocs.io/index.html
 - expected_conditions
   - https://www.selenium.dev/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html
+- SQLAlchemy
+  - https://docs.sqlalchemy.org/en/20/
 - scrapy-selenium
   - https://github.com/clemfromspace/scrapy-selenium
 
+
+## Python connect SQLite
+- autoincrement spical case
+  - BigInteger
+  - __table_args__ = {'sqlite_autoincrement': True}
 
 ## shop app webApi
 ### 所有產品清單
@@ -253,3 +260,4 @@ https://www.hp.com/us-en/shop/app/api/web/graphql/page/pdp%2Fomen-gaming-laptop-
 - Weight
 - Width
 - Wireless
+

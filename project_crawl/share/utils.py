@@ -1,10 +1,11 @@
+from datetime import datetime
 from scrapy import Request
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
-from datetime import datetime
 from types import SimpleNamespace
 import logging
 import os
+import sqlite3
 
 
 # region http
@@ -54,6 +55,18 @@ class CrawlRequest(Request):
 def get_settings(name):
     """ get value from settings.py """
     return CrawlUtils.get_setting(name=name)
+
+
+def init_db_connect():
+    """
+    connect slqite db
+    create db file if not exiest
+    See https://stackoverflow.com/a/11599344
+    """
+    db_folder = get_settings("DB_FOLDER")
+    db_name = get_settings("DB_NAME")
+    connect = sqlite3.connect(f"{db_folder}/{db_name}")
+    connect.close()
 
 
 def init_folder_path(folder):

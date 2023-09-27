@@ -1,25 +1,51 @@
+from project_crawl.share.models import Product, Base
 from project_crawl.share.utils import print_line, get_settings, init_logging
-from project_crawl.share.models import Product
 from scrapy.utils.project import get_project_settings
+from sqlalchemy import create_engine, Table, MetaData
+from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey
+from sqlalchemy.orm import Session
+from sqlalchemy.ext.declarative import declarative_base
 from time import gmtime, strftime, localtime
-import datetime
 from types import SimpleNamespace
 from urllib.parse import urlparse, parse_qs, urljoin, quote
+import datetime
 import json
 import os
 import requests
 import scrapy
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import sqlite3
 import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+import sqlite3
 
 
 settings = get_project_settings()
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 init_logging()
+
+
+# Base = declarative_base()
+# metadata = MetaData()
+db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
+engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
+
+# db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
+# engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+# Base.metadata.create_all(engine)
+
+# with Session(engine) as session:
+#     session.add_all([
+#         Product(name="T1",
+#                 link="/store/pdb/T1",
+#                 spec_link="/store/app/web/api/pdb%2FT1/async",
+#                 sale_price="$699.99"),
+#         Product(name="T2",
+#                 link="/store/pdb/T2",
+#                 spec_link="/store/app/web/api/pdb%2FT2/async",
+#                 sale_price="$899.00")
+#     ])
+#     session.commit()
 
 
 def add_product_samples():
@@ -30,10 +56,14 @@ def add_product_samples():
 
     with Session(engine) as session:
         session.add_all([
-            Product(name="T1", link="/store/pdb/T1",
-                    spec_link="/store/app/web/api/pdb%2FT1/async", sale_price="$699.99"),
-            Product(name="T2", link="/store/pdb/T2",
-                    spec_link="/store/app/web/api/pdb%2FT2/async", sale_price="$899.00")
+            Product(name="T1",
+                    link="/store/pdb/T1",
+                    spec_link="/store/app/web/api/pdb%2FT1/async",
+                    sale_price="$699.99"),
+            Product(name="T2",
+                    link="/store/pdb/T2",
+                    spec_link="/store/app/web/api/pdb%2FT2/async",
+                    sale_price="$899.00")
         ])
         session.commit()
 
