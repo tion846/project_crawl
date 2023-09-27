@@ -1,11 +1,13 @@
 from datetime import datetime
+from project_crawl.share.models import Base
 from scrapy import Request
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
+from sqlalchemy import create_engine
 from types import SimpleNamespace
 import logging
 import os
-import sqlite3
+import sqlalchemy
 
 
 # region http
@@ -65,8 +67,15 @@ def init_db_connect():
     """
     db_folder = get_settings("DB_FOLDER")
     db_name = get_settings("DB_NAME")
-    connect = sqlite3.connect(f"{db_folder}/{db_name}")
-    connect.close()
+    db_connect_string = os.path.join(os.getcwd(), db_folder, db_name)
+    engine = create_engine(f"sqlite:///{db_connect_string}")
+
+    # engine.connect() 建立連線, 產生{db_name}.db檔案
+    # has_table() 建立不存在的Table
+    with engine.connect() as connection:
+        if not sqlalchemy.inspect(engine).has_table("Product"):
+            Base.metadata.create_all(engine)
+
 
 
 def init_folder_path(folder):

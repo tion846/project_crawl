@@ -1,5 +1,5 @@
 from project_crawl.share.models import Product, Base
-from project_crawl.share.utils import print_line, get_settings, init_logging
+from project_crawl.share.utils import print_line, get_settings, init_logging, init_db_connect
 from scrapy.utils.project import get_project_settings
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey
@@ -21,14 +21,15 @@ settings = get_project_settings()
 output_folder = settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
 init_logging()
 
+init_db_connect()
 
 # Base = declarative_base()
 # metadata = MetaData()
-db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
-engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+# db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
+# engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
 
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+# Base.metadata.drop_all(engine)
+# Base.metadata.create_all(engine)
 
 # db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
 # engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
