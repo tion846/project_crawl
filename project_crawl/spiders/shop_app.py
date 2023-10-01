@@ -92,7 +92,7 @@ class ShopAppSpider(scrapy.Spider):
             product_name = card.find("h3").get_text()
             url = card.find("a")["href"]
             product_page_url = self.get_product_page_url(url)
-            specifications = self.get_product_page(product_page_url)
+            # specifications = self.get_product_page(product_page_url)
 
             price_inline = card.select_one(
                 "div[class^=PriceBlock-module_salePriceWrapperInline]"
@@ -110,10 +110,10 @@ class ShopAppSpider(scrapy.Spider):
                 price = 0
 
             item = {
-                "product_name": product_name,
-                "url": url,
-                "price": price,
-                "product_page_url": product_page_url,
-                "technical_specifications": specifications
+                "name": product_name,
+                "link": url,
+                "sale_price": price,
+                "spec_link": product_page_url,
+                # "technical_specifications": specifications
             }
             yield item

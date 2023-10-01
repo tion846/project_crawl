@@ -6,11 +6,14 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from project_crawl.share.models import Product
 from project_crawl.share.utils import print_line
 from scrapy.utils.project import get_project_settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from time import localtime, strftime
-import logging
 import json
+import logging
 import os
 
 
@@ -41,6 +44,14 @@ class JsonWriterPipeline:
                 output_file
             )
 
+            dataset = map(self.generate_product, data)
+            db_connect_string = os.path.join(os.getcwd(), "SQLite", "CrawlDB.db")
+            engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+
+            with Session(engine) as session:
+                session.add_all(dataset)
+                session.commit()
+
             self.file = open(output_file_path, "w", encoding="utf-8")
             self.file.write(json.dumps(data))
             self.file.close()
@@ -59,3 +70,10 @@ class JsonWriterPipeline:
             collects.append(ItemAdapter(item).asdict())
 
         return item
+
+    def generate_product(self, item):
+        product = Product(name=item["name"],
+                          sale_price=item["sale_price"],
+                          link=item["link"],
+                          spec_link=item["spec_link"])
+        return product
