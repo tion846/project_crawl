@@ -38,8 +38,9 @@ class Product(Base):
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串，如果不想写可以不写
     def __repr__(self):
+        id = self.Id if (self.Id) else 0
         return "<Product(Id='%d', Name='%s', Link='%s', Spec_Link='%s', Sale_Price='%s')>" % (
-            self.Id, self.Name, self.Link, self.Spec_Link, self.Sale_Price
+            id, self.Name, self.Link, self.Spec_Link, self.Sale_Price
         )
 
 

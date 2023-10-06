@@ -16,9 +16,9 @@ class ShopAppSpider(scrapy.Spider):
         "https://www.hp.com/us-en/shop/sitesearch?keyword=Laptops"
     ]
 
-    headers = { "User-Agent": get_settings("USER_AGENT") }
+    headers = {"User-Agent": get_settings("USER_AGENT")}
     keywords = ["Laptops", "Desktops", "Docking"]
-    url_product_page = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/"
+    product_page_api_pattern = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/%s/async"
     product_page_suffix = "async"
 
     def __init__(self, name=None, **kwargs):
@@ -41,6 +41,7 @@ class ShopAppSpider(scrapy.Spider):
         loop_flag = False
         while not loop_flag:
             if not is_env_production():
+                """ 若為開發環境, 只執行部分程式碼測試功能 """
                 break
 
             print_line(f"[loop {i}] begin.")
@@ -70,7 +71,9 @@ class ShopAppSpider(scrapy.Spider):
     def get_product_page_url(self, url):
         product_page = url.replace("/us-en/shop/", "")
         encode_product_page = quote(product_page, safe="")
-        result = urljoin(self.url_product_page, f"{encode_product_page}/{self.product_page_suffix}")
+        # result = urljoin(self.product_page_api_pattern,
+        #                  f"{encode_product_page}/{self.product_page_suffix}")
+        result = self.product_page_api_pattern % (encode_product_page)
 
         return result
 
