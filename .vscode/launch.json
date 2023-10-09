@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Launch Scrapy Spider",
+            "name": "Python: Launch Spider",
             "type": "python",
             "request": "launch",
             "module": "scrapy",
@@ -14,17 +14,6 @@
                 "${file}"
             ],
             "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Launch practice.py",
-            "type": "python",
-            "request": "launch",
-            "module": "scrapy",
-            "args": [
-                "runspider",
-                "${workspaceFolder}\\project_crawl\\spiders\\practice.py"
-            ],
-            "console": "integratedTerminal"
-        },
+        }
     ]
 }

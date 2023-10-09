@@ -69,6 +69,7 @@ class ShopAppSpider(scrapy.Spider):
         print_line("[driver_before_response] end.")
 
     def get_product_page_url(self, url):
+        """ 產生Product Detail WebApi """
         product_page = url.replace("/us-en/shop/", "")
         encode_product_page = quote(product_page, safe="")
         # result = urljoin(self.product_page_api_pattern,
