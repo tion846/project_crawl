@@ -2,48 +2,13 @@
 
 ## 文件
 
-- [建立Scrapy專案][create-project]
+- [建立Scrapy專案][link:create-project]
+- [Python Library][link:python-library]
 
-    [create-project]: /document/create-project.md        "游標顯示"
+[link:create-project]: /document/create-project.md
+[link:python-library]: /document/python-library.md
 
 # scrapy
-
-## create project
-
-```bat
-:: 1.Install package
-pip3 install scrapy
-pip3 install selenium
-REM pip3 install scrapy-selenium
-pip3 install SQLAlchemy
-
-:: 2.Create scrapy project
-scrapy startproject {project}
-
-CD {project}
-
-:: 3.Gengerate py
-scrapy genspider {spider} localhost
-
-:: 4.run a spider
-scrapy crawl {spider}
-
-
-
-:: List available spiders
-scrapy list
-
-:: Run a self-contained spider (without creating a project)
-scrapy runspider {spider}
-
-:: Print Scrapy version
-scrapy version
-```
-
-## vscode debugging setting
-- https://docs.scrapy.org/en/latest/topics/debug.html
-- https://stackoverflow.com/questions/49201915/debugging-scrapy-project-in-visual-studio-code
-
 
 ## documents
 - scrapy
@@ -60,6 +25,8 @@ scrapy version
   - https://docs.sqlalchemy.org/en/20/
 - scrapy-selenium
   - https://github.com/clemfromspace/scrapy-selenium
+- https://scrapy-cookbook.readthedocs.io/zh_CN/latest/scrapy-10.html#scrapy
+- https://doc.scrapy.org/en/1.0/topics/practices.html#run-scrapy-from-a-script
 
 
 ## Python connect SQLite
