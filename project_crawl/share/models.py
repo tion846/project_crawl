@@ -3,7 +3,7 @@
 
 # https://www.jianshu.com/p/c8952453b99a
 
-from automapper import mapper
+# from automapper import mapper
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped
@@ -21,14 +21,18 @@ class Product(Base):
     __tablename__ = "Product"
     __table_args__ = {'sqlite_autoincrement': True}
     Id = Column(Integer, primary_key=True, autoincrement=True)
+
     Type = Column(String(8))
     Brand = Column(String(8), nullable=False)
     Category = Column(String(8), nullable=False)
+
     Name = Column(String(64), nullable=False)
     Link = Column(String(256), nullable=False)
-    Spec_Link = Column(String(256), nullable=False)
     Sale_Price = Column(String(8), nullable=False)
+
+    Spec_Api = Column(String(256))
     Spec_Json = Column(String)
+
     Cdt = Column(DateTime, nullable=False)
 
     def __init__(self, **kw: Any):
@@ -41,8 +45,8 @@ class Product(Base):
     # __repr__方法用于输出该类的对象被print()时输出的字符串，如果不想写可以不写
     def __repr__(self):
         id = self.Id if (self.Id) else 0
-        return "<Product(Id='%d', Name='%s', Link='%s', Spec_Link='%s', Sale_Price='%s')>" % (
-            id, self.Name, self.Link, self.Spec_Link, self.Sale_Price
+        return "<Product(Id='%d', Name='%s', Link='%s', Spec_Api='%s', Sale_Price='%s')>" % (
+            id, self.Name, self.Link, self.Spec_Api, self.Sale_Price
         )
 
 

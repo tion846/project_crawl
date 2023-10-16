@@ -28,15 +28,24 @@ print_line(strftime("%y%m%d-%H%M%S", localtime()))
 data = {
     "Name": "T1",
     "Link": "/store/pdb/T1",
-    "Spec_link": "/store/app/web/api/pdb%2FT1/async",
-    "Sale_price": "$699.99"
+    "Spec_Api": "/store/app/web/api/pdb%2FT1/async",
+    "Sale_price": "$699.99",
+    "Brand": "HP",
+    "Category": "Docking",
 }
 
 item = Product(**data)
-
-print_line(data)
 print_line(item)
 
+
+
+url = "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking"
+parsed_url = urlparse(url)
+dict_query_string = parse_qs(parsed_url.query)
+print_line(dict_query_string)
+category = dict_query_string["keyword"].pop()
+
+print_line(category)
 
 # Base = declarative_base()
 # metadata = MetaData()

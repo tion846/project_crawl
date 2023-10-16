@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from time import sleep
-from urllib.parse import quote
+from urllib.parse import quote, urlparse, parse_qs
 
 import scrapy
 
@@ -12,11 +12,13 @@ import scrapy
 class ShopHpSpider(scrapy.Spider):
     name = "shop_hp"
     allowed_domains = ["www.hp.com"]
-    start_urls = [
-        "https://www.hp.com/us-en/shop/sitesearch?keyword=Laptops",
-        # "https://www.hp.com/us-en/shop/sitesearch?keyword=Desktops",
-        # "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking",
-    ]
+    # start_urls = [
+    #     # "https://www.hp.com/us-en/shop/sitesearch?keyword=Laptops",
+    #     # "https://www.hp.com/us-en/shop/sitesearch?keyword=Desktops",
+    #     # "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking",
+    # ]
+
+    start_urls = "https://www.hp.com/us-en/shop/sitesearch?keyword=%s"
     custom_settings = {
         # ["DEVELOPMENT", "PRODUCTION"]
         "ENVIRONMENT": "DEVELOPMENT",
@@ -27,7 +29,11 @@ class ShopHpSpider(scrapy.Spider):
     }
 
     headers = {"User-Agent": get_settings("USER_AGENT")}
-    keywords = ["Laptops", "Desktops", "Docking"]
+    keywords = [
+        "Laptops",
+        "Desktops",
+        "Docking"
+    ]
     product_webapi_pattern = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/%s/async"
 
     def __init__(self, name=None, **kwargs):
@@ -35,7 +41,8 @@ class ShopHpSpider(scrapy.Spider):
         super(ShopHpSpider, self).__init__(name, **kwargs)
 
     def start_requests(self):
-        for url in self.start_urls:
+        for keyword in self.keywords:
+            url = self.start_urls % (keyword)
             request = CrawlRequest(url=url,
                                    callback=self.parse,
                                    before_response_callback=self.driver_before_response)
@@ -49,21 +56,26 @@ class ShopHpSpider(scrapy.Spider):
         i = 1
         loop_flag = False
         while not loop_flag:
+            print_line(f"[loop {i}] begin.")
+
+            try:
+                btn_load_more = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable(
+                        (By.CLASS_NAME, "hawksearch-load-more")
+                    )
+                )
+                btn_load_more.click()
+                print_line(f"[loop {i}] clicked.")
+            except Exception:
+                print_line(f"[loop {i}] terminated.")
+                break
+
             if not is_env_production():
                 """ 若為開發環境, 只執行部分程式碼測試功能 """
                 break
 
-            print_line(f"[loop {i}] begin.")
-            btn_load_more = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.CLASS_NAME, "hawksearch-load-more")
-                )
-            )
-            btn_load_more.click()
-            print_line(f"[loop {i}] clicked.")
-
             try:
-                loop_flag = WebDriverWait(driver, 2).until(
+                loop_flag = WebDriverWait(driver, 5).until(
                     EC.invisibility_of_element_located(
                         (By.CLASS_NAME, "hawksearch-load-more")
                     )
@@ -86,6 +98,10 @@ class ShopHpSpider(scrapy.Spider):
         return result
 
     def parse(self, response):
+        parsed_url = urlparse(response.url)
+        query_string = parse_qs(parsed_url.query)
+        category = query_string["keyword"][0]
+
         dom_list = response.css(".vwaList").get()
         soup = BeautifulSoup(dom_list, features="lxml")
         cards = soup.select("div.productTile")
@@ -96,7 +112,6 @@ class ShopHpSpider(scrapy.Spider):
             product_name = card.find("h3").get_text()
             url = card.find("a")["href"]
             product_detail_webapi = self.get_product_detail_webapi(url)
-            # specifications = self.get_product_detail(product_detail_webapi)
 
             price_inline = card.select_one(
                 "div[class^=PriceBlock-module_salePriceWrapperInline]"
@@ -114,10 +129,12 @@ class ShopHpSpider(scrapy.Spider):
                 price = 0
 
             item = {
+                # "Type": "",
+                "Brand": "HP",
+                "Category": category,
                 "Name": product_name,
                 "Link": url,
-                "Sale_price": price,
-                "Spec_link": product_detail_webapi,
-                # "technical_specifications": specifications
+                "Sale_Price": price,
+                "Spec_Api": product_detail_webapi,
             }
             yield item
