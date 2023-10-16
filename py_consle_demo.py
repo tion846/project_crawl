@@ -23,6 +23,21 @@ init_logging()
 
 init_db_connect()
 
+print_line(strftime("%y%m%d-%H%M%S", localtime()))
+
+data = {
+    "Name": "T1",
+    "Link": "/store/pdb/T1",
+    "Spec_link": "/store/app/web/api/pdb%2FT1/async",
+    "Sale_price": "$699.99"
+}
+
+item = Product(**data)
+
+print_line(data)
+print_line(item)
+
+
 # Base = declarative_base()
 # metadata = MetaData()
 # db_connect_string = os.path.join(os.getcwd(), "SQLite", "testDB.db")
