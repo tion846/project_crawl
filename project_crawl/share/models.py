@@ -3,24 +3,27 @@
 
 # https://www.jianshu.com/p/c8952453b99a
 
-from typing import Any, List
-from typing import Optional
+from automapper import mapper
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from sqlalchemy.orm import mapped_column, relationship
 from time import localtime, strftime
-from datetime import datetime
+from typing import Any, List
+from typing import Optional
 
 
 class Base(DeclarativeBase):
     pass
 
 
-# 定义映射类User，其继承上一步创建的Base
 class Product(Base):
     __tablename__ = "Product"
     __table_args__ = {'sqlite_autoincrement': True}
     Id = Column(Integer, primary_key=True, autoincrement=True)
+    Type = Column(String(8))
+    Brand = Column(String(8), nullable=False)
+    Category = Column(String(8), nullable=False)
     Name = Column(String(64), nullable=False)
     Link = Column(String(256), nullable=False)
     Spec_Link = Column(String(256), nullable=False)
@@ -28,13 +31,12 @@ class Product(Base):
     Spec_Json = Column(String)
     Cdt = Column(DateTime, nullable=False)
 
-    def __init__(self, name, link, spec_link, sale_price, **kw: Any):
-        self.Name = name
-        self.Link = link
-        self.Spec_Link = spec_link
-        self.Sale_Price = sale_price
+    def __init__(self, **kw: Any):
+        for name, value in kw.items():
+            if hasattr(self, name):
+                setattr(self, name, value)
         self.Cdt = datetime.now()
-        super().__init__(**kw)
+        super().__init__()
 
     # __repr__方法用于输出该类的对象被print()时输出的字符串，如果不想写可以不写
     def __repr__(self):
@@ -44,6 +46,7 @@ class Product(Base):
         )
 
 
+# 定义映射类User，其继承上一步创建的Base
 # class User(Base):
 #     __tablename__ = "user_account"
 #     id: Mapped[int] = mapped_column(primary_key=True)

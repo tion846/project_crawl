@@ -12,6 +12,7 @@ from scrapy.utils.project import get_project_settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from time import localtime, strftime
+
 import json
 import logging
 import os
@@ -34,7 +35,7 @@ class JsonWriterPipeline:
         data = self.collection[spider.name]
 
         if len(data) > 0:
-            format_time = strftime("%H%M%S", localtime())
+            format_time = strftime("%y%m%d-%H%M%S", localtime())
             self.settings = get_project_settings()
             output_folder = self.settings.get("JSON_PIPELINE_OUTPUT_FOLDER")
             output_file = f"{spider.name}_item-{format_time}.json"
@@ -44,13 +45,13 @@ class JsonWriterPipeline:
                 output_file
             )
 
-            dataset = map(self.generate_product, data)
-            db_connect_string = os.path.join(os.getcwd(), "SQLite", "CrawlDB.db")
-            engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+            # dataset = map(self.generate_product, data)
+            # db_connect_string = os.path.join(os.getcwd(), "SQLite", "CrawlDB.db")
+            # engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
 
-            with Session(engine) as session:
-                session.add_all(dataset)
-                session.commit()
+            # with Session(engine) as session:
+            #     session.add_all(dataset)
+            #     session.commit()
 
             self.file = open(output_file_path, "w", encoding="utf-8")
             self.file.write(json.dumps(data))
@@ -71,9 +72,50 @@ class JsonWriterPipeline:
 
         return item
 
-    def generate_product(self, item):
-        product = Product(name=item["name"],
-                          sale_price=item["sale_price"],
-                          link=item["link"],
-                          spec_link=item["spec_link"])
-        return product
+    # def generate_product(self, item):
+    #     product = Product(name=item["name"],
+    #                       sale_price=item["sale_price"],
+    #                       link=item["link"],
+    #                       spec_link=item["spec_link"])
+    #     return product
+
+
+class SQLWriterPipeline:
+    collection = {}
+
+    def open_spider(self, spider):
+        self.collection[spider.name] = []
+
+    def close_spider(self, spider):
+        data = self.collection[spider.name]
+
+        if len(data) > 0:
+            # dataset = map(self.generate_product, data)
+            dataset = map(lambda x: Product(**x), data)
+            db_connect_string = os.path.join(
+                os.getcwd(), "SQLite", "CrawlDB.db")
+            engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+
+            with Session(engine) as session:
+                session.add_all(dataset)
+                session.commit()
+
+            self.collection[spider.name] = []
+        else:
+            message = f"[{spider.name}] data collection is empty!"
+            logging.error(message)
+            print_line(message)
+
+    def process_item(self, item, spider):
+        collects = self.collection[spider.name]
+
+        if isinstance(item, dict):
+            collects.append(item)
+        else:
+            collects.append(ItemAdapter(item).asdict())
+
+        return item
+
+    # def generate_product(self, item):
+    #     product = Product(item)
+    #     return product

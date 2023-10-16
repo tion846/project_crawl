@@ -1,7 +1,6 @@
 from scrapy.utils.project import get_project_settings
 from project_crawl.share.utils import init_folder_path, init_db_connect
 
-
 settings = get_project_settings()
 
 logging_folder = settings.get("LOG_FILE_FOLDER")
