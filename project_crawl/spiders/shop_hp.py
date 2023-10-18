@@ -17,7 +17,6 @@ class ShopHpSpider(scrapy.Spider):
     #     # "https://www.hp.com/us-en/shop/sitesearch?keyword=Desktops",
     #     # "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking",
     # ]
-
     start_urls = "https://www.hp.com/us-en/shop/sitesearch?keyword=%s"
     custom_settings = {
         # ["DEVELOPMENT", "PRODUCTION"]
@@ -28,13 +27,12 @@ class ShopHpSpider(scrapy.Spider):
         }
     }
 
-    # headers = {"User-Agent": get_settings("USER_AGENT")}
+    product_webapi_pattern = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/%s/async"
     keywords = [
         "Laptops",
         "Desktops",
         "Docking"
     ]
-    product_webapi_pattern = "https://www.hp.com/us-en/shop/app/api/web/graphql/page/%s/async"
 
     def __init__(self, name=None, **kwargs):
         init_logging()

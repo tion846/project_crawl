@@ -1,8 +1,8 @@
 from project_crawl.share.models import Product, Base
-from project_crawl.share.utils import print_line, get_settings, init_logging, init_db_connect
+from project_crawl.share.utils import print_line, get_settings, init_logging, init_db_connect, get_db_connect_string
 from scrapy.utils.project import get_project_settings
 from sqlalchemy import create_engine, Table, MetaData
-from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey
+from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 from time import gmtime, strftime, localtime
@@ -23,7 +23,26 @@ init_logging()
 
 init_db_connect()
 
-print_line(strftime("%y%m%d-%H%M%S", localtime()))
+products = []
+
+db_connect_string = get_db_connect_string()
+engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+
+with Session(engine) as session:
+    statement = select(Product).where(Product.Spec_Json == None).limit(1)
+    products = session.scalars(statement).all()
+
+    item = products[0]
+    print_line(item)
+
+    item.Spec_Json = "spec"
+    print_line(item.Spec_Json)
+
+    session.execute(update(Product), [
+        {"Id": item.Id, "Spec_Json": "spec"}
+    ])
+    session.commit()
+
 
 data = {
     "Name": "T1",
@@ -34,18 +53,18 @@ data = {
     "Category": "Docking",
 }
 
-item = Product(**data)
-print_line(item)
+
+# item = Product(**data)
+# print_line(item)
 
 
+# url = "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking"
+# parsed_url = urlparse(url)
+# dict_query_string = parse_qs(parsed_url.query)
+# print_line(dict_query_string)
+# category = dict_query_string["keyword"].pop()
 
-url = "https://www.hp.com/us-en/shop/sitesearch?keyword=Docking"
-parsed_url = urlparse(url)
-dict_query_string = parse_qs(parsed_url.query)
-print_line(dict_query_string)
-category = dict_query_string["keyword"].pop()
-
-print_line(category)
+# print_line(category)
 
 # Base = declarative_base()
 # metadata = MetaData()
