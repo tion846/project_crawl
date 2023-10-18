@@ -21,3 +21,6 @@
 
 ## SQLite IDE Tool
 - https://sqlitebrowser.org/
+
+## Scrapy example
+- https://stackoverflow.com/questions/70462844/interpreting-callbacks-and-cb-kwargs-with-scrapy

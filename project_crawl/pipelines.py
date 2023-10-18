@@ -7,7 +7,7 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from project_crawl.share.models import Product
-from project_crawl.share.utils import print_line
+from project_crawl.share.utils import print_line, get_db_connect_string
 from scrapy.utils.project import get_project_settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -76,8 +76,7 @@ class SQLWriterPipeline:
 
         if len(data) > 0:
             dataset = map(lambda x: Product(**x), data)
-            db_connect_string = os.path.join(
-                os.getcwd(), "SQLite", "CrawlDB.db")
+            db_connect_string = get_db_connect_string()
             engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
 
             with Session(engine) as session:

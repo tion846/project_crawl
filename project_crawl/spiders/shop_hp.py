@@ -28,7 +28,7 @@ class ShopHpSpider(scrapy.Spider):
         }
     }
 
-    headers = {"User-Agent": get_settings("USER_AGENT")}
+    # headers = {"User-Agent": get_settings("USER_AGENT")}
     keywords = [
         "Laptops",
         "Desktops",

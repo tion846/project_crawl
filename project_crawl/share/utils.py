@@ -59,15 +59,20 @@ def get_settings(name):
     return CrawlUtils.get_setting(name=name)
 
 
+def get_db_connect_string():
+    db_folder = get_settings("DB_FOLDER")
+    db_name = get_settings("DB_NAME")
+    db_connect_string = os.path.join(os.getcwd(), db_folder, db_name)
+    return db_connect_string
+
+
 def init_db_connect():
     """
     connect slqite db
     create db file if not exiest
     See https://stackoverflow.com/a/11599344
     """
-    db_folder = get_settings("DB_FOLDER")
-    db_name = get_settings("DB_NAME")
-    db_connect_string = os.path.join(os.getcwd(), db_folder, db_name)
+    db_connect_string = get_db_connect_string()
     engine = create_engine(f"sqlite:///{db_connect_string}")
 
     # engine.connect() 建立連線, 產生{db_name}.db檔案
@@ -75,7 +80,6 @@ def init_db_connect():
     with engine.connect() as connection:
         if not sqlalchemy.inspect(engine).has_table("Product"):
             Base.metadata.create_all(engine)
-
 
 
 def init_folder_path(folder):
