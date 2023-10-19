@@ -1,10 +1,8 @@
 from project_crawl.share.models import Product
 from project_crawl.share.utils import init_logging, print_line, get_settings, get_db_connect_string, is_env_production
-from sqlalchemy import create_engine, select, update
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-from types import SimpleNamespace
 
-import json
 import scrapy
 
 
@@ -24,10 +22,11 @@ class ShopHpDetailSpider(scrapy.Spider):
             "project_crawl.middlewares.SeleniumMiddleware": None,
             # "project_crawl.middlewares.HttpRequestMiddleware": 540,
         },
-        # "ITEM_PIPELINES": {
-        #     "project_crawl.pipelines.JsonWriterPipeline": 300,
-        #     "project_crawl.pipelines.SQLWriterPipeline": 310,
-        # },
+        "ITEM_PIPELINES": {
+            "project_crawl.pipelines.JsonWriterPipeline": 300,
+            "project_crawl.pipelines.SQLWriterPipeline": None,
+            "project_crawl.pipelines.SQLUpdateByPKPipeline": 310,
+        },
     }
 
     headers = {"User-Agent": get_settings("USER_AGENT")}
@@ -39,7 +38,12 @@ class ShopHpDetailSpider(scrapy.Spider):
         engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
 
         with Session(engine) as session:
-            statement = select(Product).where(Product.Spec_Json == None).limit(1)
+            statement = select(Product).where(Product.Spec_Json == None)
+
+            if not is_env_production():
+                """ 若為開發環境, 只執行部分程式碼測試功能 """
+                statement = statement.limit(10)
+
             self.products = session.scalars(statement).all()
 
         super(ShopHpDetailSpider, self).__init__(name, **kwargs)
@@ -55,23 +59,13 @@ class ShopHpDetailSpider(scrapy.Spider):
             )
 
     def parse(self, response, item):
-        print_line(response)
-        result = response.json()
-
         try:
-            # TODO:
-            # data_json = json.loads(result["data"], object_hook=lambda x: SimpleNamespace(**x))
-            # data = data_json.data.page.pageComponents.pdpTechSpecs.technical_specifications
+            result = response.json()
             data = result["data"]["page"]["pageComponents"]["pdpTechSpecs"]["technical_specifications"]
-
-            db_connect_string = get_db_connect_string()
-            engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
-
-            with Session(engine) as session:
-                self.products = session.execute(update(Product), [
-                    { "Id": item.Id, "Spec_Json": str(data) }
-                ])
-                session.commit()
+            yield {
+                "Id": item.Id,
+                "Spec_Json": str(data)
+            }
 
         except Exception:
             pass

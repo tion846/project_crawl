@@ -9,7 +9,7 @@ from itemadapter import ItemAdapter
 from project_crawl.share.models import Product
 from project_crawl.share.utils import print_line, get_db_connect_string
 from scrapy.utils.project import get_project_settings
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, update
 from sqlalchemy.orm import Session
 from time import localtime, strftime
 
@@ -81,6 +81,40 @@ class SQLWriterPipeline:
 
             with Session(engine) as session:
                 session.add_all(dataset)
+                session.commit()
+
+            self.collection[spider.name] = []
+        else:
+            message = f"[{spider.name}] data collection is empty!"
+            logging.error(message)
+            print_line(message)
+
+    def process_item(self, item, spider):
+        collects = self.collection[spider.name]
+
+        if isinstance(item, dict):
+            collects.append(item)
+        else:
+            collects.append(ItemAdapter(item).asdict())
+
+        return item
+
+
+class SQLUpdateByPKPipeline:
+    collection = {}
+
+    def open_spider(self, spider):
+        self.collection[spider.name] = []
+
+    def close_spider(self, spider):
+        data = self.collection[spider.name]
+
+        if len(data) > 0:
+            db_connect_string = get_db_connect_string()
+            engine = create_engine(f"sqlite:///{db_connect_string}", echo=True)
+
+            with Session(engine) as session:
+                session.execute(update(Product), data)
                 session.commit()
 
             self.collection[spider.name] = []
